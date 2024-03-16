@@ -9,8 +9,12 @@ fn main() {
   println!("From main(): {}", hello); // From main(): Hello
 
   let hello : String = String::from("Hello");
-  borrow(&hello); // From borrow(): Hello WasmEdge!
-  println!("From main(): {}", hello); // From main(): Hello
+  let hello_returned : String = borrow_and_return(&hello); // From borrow(): Hello WasmEdge!
+  println!("From main() after Borrow returns: {}", hello_returned); // From main(): Hello
+
+  let mut hello : String = String::from("Hello");
+  borrow(&mut hello); // From borrow(): Hello WasmEdge!
+  println!("From main() after Borrow mutated: {}", hello); // From main(): Hello
 }
 
 fn take (mut s: String) {
@@ -18,8 +22,15 @@ fn take (mut s: String) {
   println!("From take(): {}", s);
 }
 
-fn borrow (s: &String) {
+fn borrow_and_return (s: &String) -> String {
   let mut buf = String::from(s);
   buf.push_str(" WasmEdge!");
   println!("From borrow(): {}", buf);
+  buf
+}
+
+fn borrow (s: &mut String) {
+  // Ok, * is a dereference operator. Also implicity works without it.
+  (*s).push_str(" WasmEdge!");
+  println!("From borrow(): {}", s);
 }
